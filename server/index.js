@@ -24,7 +24,7 @@ const broadcast = message => {
 const expireOldReports = () => {
   const cutoff = new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString();
   db.prepare(
-    'UPDATE price_reports SET status = "expired" WHERE status = "active" AND created_at < ?'
+    "UPDATE price_reports SET status = 'expired' WHERE status = 'active' AND created_at < ?"
   ).run(cutoff);
 };
 
