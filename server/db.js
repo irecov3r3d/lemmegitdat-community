@@ -77,6 +77,16 @@ db.exec(`
     created_at TEXT NOT NULL,
     FOREIGN KEY(region_id) REFERENCES regions(id)
   );
+
+  -- Optimization: Add index for price reports lookup to speed up /api/price-reports and /api/best-price
+  -- This reduces query time significantly when there are thousands of active reports
+  CREATE INDEX IF NOT EXISTS idx_price_reports_lookup
+    ON price_reports(region_id, ingredient_id, status, created_at DESC);
+
+  -- Optimization: Add index for status and created_at to speed up expireOldReports
+  -- This prevents full table scans on every request
+  CREATE INDEX IF NOT EXISTS idx_price_reports_expire
+    ON price_reports(status, created_at);
 `);
 
 const seedDatabase = () => {

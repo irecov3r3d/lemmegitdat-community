@@ -23,8 +23,9 @@ const broadcast = message => {
 
 const expireOldReports = () => {
   const cutoff = new Date(Date.now() - 1000 * 60 * 60 * 48).toISOString();
+  // Fixing syntax to use single quotes around string literals for SQLite
   db.prepare(
-    'UPDATE price_reports SET status = "expired" WHERE status = "active" AND created_at < ?'
+    "UPDATE price_reports SET status = 'expired' WHERE status = 'active' AND created_at < ?"
   ).run(cutoff);
 };
 
@@ -54,6 +55,8 @@ const baseReportQuery = `
     AND pr.region_id = ?
     AND pr.ingredient_id = ?
   ORDER BY pr.created_at DESC
+  -- Optimization: Limit to 50 reports to prevent massive memory usage and long query times on large datasets
+  LIMIT 50
 `;
 
 app.get('/api/ingredients', (_req, res) => {
